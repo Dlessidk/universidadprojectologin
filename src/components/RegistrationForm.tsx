@@ -73,8 +73,24 @@ const initialFormState: FormState = {
   noTieneLicenciaAMano: false,
 };
 
-export default function RegistrationForm() {
-  const [form, setForm] = useState<FormState>(initialFormState);
+interface RegistrationFormProps {
+  telefonoSesion: string;
+}
+
+export default function RegistrationForm({ telefonoSesion }: RegistrationFormProps) {
+  const [form, setForm] = useState<FormState>({
+    ...initialFormState,
+    codigoPais: "+505",
+    telefono: telefonoSesion,
+  });
+
+  useEffect(() => {
+    setForm(p => ({
+      ...p,
+      codigoPais: "+505",
+      telefono: telefonoSesion,
+    }));
+  }, [telefonoSesion]);
   const [solicitudCompletada, setSolicitudCompletada] = useState(false);
   const [numeroSolicitud, setNumeroSolicitud] = useState('');
   const [copiado, setCopiado] = useState(false);
@@ -818,39 +834,27 @@ Quedo atento(a) al dictamen de validación.`;
                 </div>
 
                 <div>
-                  <label className={labelClass}>Número Telefónico de Contacto</label>
-                  <div className="flex gap-2">
-                    <select
-                      className="border border-gray-300 rounded px-2.5 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#1e88e5] focus:ring-1 focus:ring-[#1e88e5] cursor-pointer w-[125px] flex-shrink-0"
-                      value={form.codigoPais}
-                      onChange={e => handleCodigoPaisChange(e.target.value)}
-                    >
-                      {countryCodes.map(c => (
-                        <option key={c.code} value={c.code}>
-                          {c.code} {c.country.split(' ')[0]}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className={labelClass + " mb-0"}>Número Telefónico de Contacto</label>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
+                      <ShieldCheck className="w-3 h-3" /> Verificado
+                    </span>
+                  </div>
+                  <div className="flex rounded overflow-hidden border border-gray-300 bg-gray-100">
+                    <span className="inline-flex items-center px-3 py-2 text-sm font-semibold text-gray-700 bg-gray-200 border-r border-gray-300 select-none">
+                      +505
+                    </span>
                     <input
                       type="tel"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={form.codigoPais === '+505' ? 8 : 15}
-                      className={`${inputClass} ${
-                        form.telefono && !isTelefonoValid ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-                      }`}
-                      placeholder="Ej: 88888888"
+                      readOnly
                       value={form.telefono}
-                      onChange={e => handleTelefonoChange(e.target.value)}
+                      className="w-full px-3 py-2 text-sm font-mono font-semibold text-gray-700 bg-gray-100 cursor-not-allowed outline-none"
+                      title="Este número está vinculado a tu sesión verificada por WhatsApp"
                     />
                   </div>
-                  {form.telefono && !isTelefonoValid && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {form.codigoPais === '+505'
-                        ? 'Ingrese un número de 8 dígitos válido para Nicaragua.'
-                        : 'Ingrese un número válido (mínimo 7 dígitos).'}
-                    </p>
-                  )}
+                  <p className="text-[11px] text-gray-500 mt-1">
+                    Vinculado automáticamente a tu cuenta verificada.
+                  </p>
                 </div>
 
                 <div className="border border-gray-200 rounded p-3 bg-white">
