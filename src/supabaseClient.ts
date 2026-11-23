@@ -1,20 +1,13 @@
-const mockBuilder: any = {
-  select: () => mockBuilder,
-  insert: () => Promise.resolve({ data: [], error: null }),
-  update: () => mockBuilder,
-  delete: () => mockBuilder,
-  eq: () => mockBuilder,
-  order: () => Promise.resolve({ data: [], error: null }),
-  single: () => Promise.resolve({ data: null, error: null }),
-  then: (resolve: any) => resolve({ data: [], error: null }),
-};
+import { createClient } from '@supabase/supabase-js';
 
-export const supabase: any = {
-  from: () => mockBuilder,
-  storage: {
-    from: () => ({
-      upload: () => Promise.resolve({ data: { path: 'mock.jpg' }, error: null }),
-      getPublicUrl: () => ({ data: { publicUrl: '' } }),
-    }),
-  },
-};
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('Faltan VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY en las variables de entorno.');
+}
+
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-key'
+);
